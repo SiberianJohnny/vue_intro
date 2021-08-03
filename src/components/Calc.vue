@@ -1,7 +1,15 @@
 <template>
   <div class="calc">
-    <input type="number" v-model.number="number1" />
-    <input type="number" v-model.number="number2" />
+    <input
+      type="number"
+      v-model.number="number1"
+      placeholder="Enter First Number"
+    />
+    <input
+      type="number"
+      v-model.number="number2"
+      placeholder="Enter Second Number"
+    />
     <br />
     = {{ result }}
     <br />
@@ -9,6 +17,7 @@
     <div class="error" v-if="!!error">Ошибка: {{ error }}</div>
 
     <button
+      class="operations"
       v-for="item in operations"
       :key="item"
       @click="calculate(item)"
@@ -17,8 +26,44 @@
       {{ item }}
     </button>
 
+    <br />
+    <input class="keyboard__show" type="checkbox" v-model="keyboardCheckbox" />
+    Virtual Keyboard
+    <br />
+    <div class="keyboard" v-show="keyboardCheckbox">
+      <button
+        v-for="item in keyboard"
+        :key="item"
+        @click="addKey(item)"
+        :title="item"
+      >
+        {{ item }}
+      </button>
+      <button @click="clear">Clear Input</button>
+      <div class="keyboard__radio">
+        <label class="keyboard__radiobutton">
+          <input
+            type="radio"
+            value="number1"
+            name="keyboard__radio"
+            v-model="keyboardRadio"
+          />
+          <span>First number</span>
+        </label>
+        <label class="keyboard__radiobutton">
+          <input
+            type="radio"
+            value="number2"
+            name="keyboard__radio"
+            v-model="keyboardRadio"
+          />
+          <span>Second number</span>
+        </label>
+      </div>
+    </div>
+
     <div class="logs">
-      Logs:
+      Calculator History:
       <br />
       <div v-for="(log, id) in logs" :key="id">{{ log }}</div>
     </div>
@@ -29,11 +74,14 @@
 export default {
   name: "Calculator",
   data: () => ({
-    number1: 0,
-    number2: 0,
-    result: 0,
+    number1: "",
+    number2: "",
+    result: "Result",
     error: "",
     operations: ["+", "-", "*", "/", "Exponentiation", "Integer Division"],
+    keyboard: [0, 1, "2", "3", "4", "5", "6", "7", "8", "9"],
+    keyboardCheckbox: "",
+    keyboardRadio: "number1",
     logs: {},
   }),
   methods: {
@@ -64,7 +112,7 @@ export default {
       this.$set(this.logs, key, value);
     },
     sum() {
-      this.result = this.number1 + this.number2;
+      this.result = parseInt(this.number1) + parseInt(this.number2);
     },
     subtraction() {
       this.result = this.number1 - this.number2;
@@ -85,9 +133,30 @@ export default {
     int() {
       this.result = Math.floor(this.number1 / this.number2);
     },
+    addKey(number) {
+      if (this.keyboardRadio === "number1") {
+        this.number1 += number;
+      } else {
+        this.number2 += number;
+      }
+    },
+    clear() {
+      if (this.keyboardRadio === "number1") {
+        this.number1 = "";
+      } else {
+        this.number2 = "";
+      }
+    },
   },
 };
 </script>
 
 <style>
+.keyboard__show {
+  margin-top: 25px;
+  margin-bottom: 15px;
+}
+.logs {
+  margin-top: 15px;
+}
 </style>
